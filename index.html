@@ -72,6 +72,10 @@ button:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
 .day.hN{border-color:var(--hN);background:var(--hNbg)}.day.hA{border-color:var(--hA);background:var(--hAbg)}.day.hL{border-color:var(--hL);background:var(--hLbg)}.day.hR{border-color:var(--hR);background:var(--hRbg)}
 .day.dim .tag{opacity:.22}
 .day.mine{box-shadow:inset 0 -4px 0 var(--sel)}
+.day.evt::before{content:"";position:absolute;top:5px;left:5px;width:6px;height:6px;border-radius:50%;background:var(--fg);opacity:.7}
+.evdot{display:inline-block;width:8px;height:8px;border-radius:50%;background:var(--fg);opacity:.7}
+.loadmsg{display:flex;flex-direction:column;gap:10px}
+.loadmsg input{font:inherit}
 .day.vac::after{content:"V";position:absolute;top:3px;right:4px;font-size:10px;font-weight:700;color:var(--accent)}
 .hlist{display:flex;flex-direction:column;gap:6px}
 .hitem{display:flex;gap:10px;align-items:center;background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:8px 10px;font-size:14px}
@@ -113,7 +117,7 @@ nav.tabs button[aria-selected="true"]{color:var(--accent)}
 
 
 <div class="wrap">
-  <div class="top"><h1>Guardias Teleco</h1><small id="ver">Rotación hasta dic. 2027</small></div>
+  <div class="top"><h1>Guardias Teleco</h1><small id="ver"></small></div>
   <section class="now" id="now" aria-live="polite"></section>
   <div class="filters" id="filters" role="group" aria-label="Ver guardias de"></div>
   <section class="panel" id="v-cal"></section>
@@ -127,10 +131,11 @@ nav.tabs button[aria-selected="true"]{color:var(--accent)}
   <button role="tab" data-v="res" aria-selected="false"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 20V10M10 20V4M16 20v-7M22 20H2"/></svg>Resumen</button>
 </div></nav>
 
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
 <script>
 const P=["Javi","Jose","Jose Luis","Alberto","Molinero"], AB=["Jv","Js","JL","Al","Mo"];
-const DAYS={"2026-10-01":[[1,2]],"2026-10-02":[[1,2]],"2026-10-03":[[1,2]],"2026-10-04":[[1,2]],"2026-10-05":[[0,2]],"2026-10-06":[[0,4]],"2026-10-07":[[0,4]],"2026-10-08":[[0,4]],"2026-10-09":[[0,4]],"2026-10-10":[[0,4]],"2026-10-11":[[0,4]],"2026-10-12":[[1,3]],"2026-10-13":[[1,3]],"2026-10-14":[[1,3]],"2026-10-15":[[1,3]],"2026-10-16":[[1,3]],"2026-10-17":[[1,3]],"2026-10-18":[[1,3]],"2026-10-19":[[0,4]],"2026-10-20":[[0,4]],"2026-10-21":[[0,4]],"2026-10-22":[[0,4]],"2026-10-23":[[0,4]],"2026-10-24":[[0,4]],"2026-10-25":[[0,4]],"2026-10-26":[[1,2]],"2026-10-27":[[1,2]],"2026-10-28":[[1,2]],"2026-10-29":[[1,2]],"2026-10-30":[[1,2]],"2026-10-31":[[1,2]],"2026-11-01":[[1,2]],"2026-11-02":[[3,4]],"2026-11-03":[[3,4]],"2026-11-04":[[3,4]],"2026-11-05":[[3,4]],"2026-11-06":[[3,4]],"2026-11-07":[[3,4]],"2026-11-08":[[3,4]],"2026-11-09":[[0,2]],"2026-11-10":[[0,2]],"2026-11-11":[[0,2]],"2026-11-12":[[0,2]],"2026-11-13":[[0,2]],"2026-11-14":[[0,2]],"2026-11-15":[[0,2]],"2026-11-16":[[1,4]],"2026-11-17":[[1,4]],"2026-11-18":[[1,4]],"2026-11-19":[[1,4]],"2026-11-20":[[1,4]],"2026-11-21":[[1,4]],"2026-11-22":[[1,4]],"2026-11-23":[[0,3]],"2026-11-24":[[0,3]],"2026-11-25":[[0,3]],"2026-11-26":[[0,3]],"2026-11-27":[[0,3]],"2026-11-28":[[0,3]],"2026-11-29":[[0,3]],"2026-11-30":[[1,2]],"2026-12-01":[[1,2]],"2026-12-02":[[1,2]],"2026-12-03":[[1,2]],"2026-12-04":[[1,2]],"2026-12-05":[[1,2]],"2026-12-06":[[1,2]],"2026-12-07":[[3,4]],"2026-12-08":[[3,4]],"2026-12-09":[[3,4]],"2026-12-10":[[3,4]],"2026-12-11":[[3,4]],"2026-12-12":[[3,4]],"2026-12-13":[[3,4]],"2026-12-14":[[0,2]],"2026-12-15":[[0,2]],"2026-12-16":[[0,2]],"2026-12-17":[[0,2]],"2026-12-18":[[0,2],[3]],"2026-12-19":[[0,2],[3]],"2026-12-20":[[0,2],[3]],"2026-12-21":[[1,4],[3]],"2026-12-22":[[1,4],[3]],"2026-12-23":[[1,4],[3]],"2026-12-24":[[1,4]],"2026-12-25":[[1,4]],"2026-12-26":[[1,4],[3]],"2026-12-27":[[1,4],[3]],"2026-12-28":[[0,2],[3]],"2026-12-29":[[0,2],[3]],"2026-12-30":[[0,2],[3]],"2026-12-31":[[0,2]],"2027-01-01":[[0,2]],"2027-01-02":[[0,2]],"2027-01-03":[[0,2]],"2027-01-04":[[1,3]],"2027-01-05":[[1,3]],"2027-01-06":[[1,3]],"2027-01-07":[[1,3]],"2027-01-08":[[1,3]],"2027-01-09":[[1,3]],"2027-01-10":[[1,3]],"2027-01-11":[[0,4]],"2027-01-12":[[0,4]],"2027-01-13":[[0,4]],"2027-01-14":[[0,4]],"2027-01-15":[[0,4]],"2027-01-16":[[0,4]],"2027-01-17":[[0,4]],"2027-01-18":[[2,3]],"2027-01-19":[[2,3]],"2027-01-20":[[2,3]],"2027-01-21":[[2,3]],"2027-01-22":[[2,3]],"2027-01-23":[[2,3]],"2027-01-24":[[2,3]],"2027-01-25":[[1,4]],"2027-01-26":[[1,4]],"2027-01-27":[[1,4]],"2027-01-28":[[1,4]],"2027-01-29":[[1,4]],"2027-01-30":[[1,4]],"2027-01-31":[[1,4]],"2027-02-01":[[0,3]],"2027-02-02":[[0,3]],"2027-02-03":[[0,3]],"2027-02-04":[[0,3]],"2027-02-05":[[0,3]],"2027-02-06":[[0,3]],"2027-02-07":[[0,3]],"2027-02-08":[[1,2]],"2027-02-09":[[1,2]],"2027-02-10":[[1,2]],"2027-02-11":[[1,2]],"2027-02-12":[[1,2]],"2027-02-13":[[1,2]],"2027-02-14":[[1,2]],"2027-02-15":[[0,4]],"2027-02-16":[[0,4]],"2027-02-17":[[0,4]],"2027-02-18":[[0,4]],"2027-02-19":[[0,4]],"2027-02-20":[[0,4]],"2027-02-21":[[0,4]],"2027-02-22":[[2,3]],"2027-02-23":[[2,3]],"2027-02-24":[[2,3]],"2027-02-25":[[2,3]],"2027-02-26":[[2,3]],"2027-02-27":[[2,3]],"2027-02-28":[[2,3]],"2027-03-01":[[0,1]],"2027-03-02":[[0,1]],"2027-03-03":[[0,1]],"2027-03-04":[[0,1]],"2027-03-05":[[0,1]],"2027-03-06":[[0,1]],"2027-03-07":[[0,1]],"2027-03-08":[[2,4]],"2027-03-09":[[2,4]],"2027-03-10":[[2,4]],"2027-03-11":[[2,4]],"2027-03-12":[[2,4]],"2027-03-13":[[2,4]],"2027-03-14":[[2,4]],"2027-03-15":[[1,3]],"2027-03-16":[[1,3]],"2027-03-17":[[1,3]],"2027-03-18":[[1,3]],"2027-03-19":[[1,3]],"2027-03-20":[[1,3]],"2027-03-21":[[1,3]],"2027-03-22":[[0,4]],"2027-03-23":[[0,4]],"2027-03-24":[[0,4]],"2027-03-25":[[0,4]],"2027-03-26":[[0,4]],"2027-03-27":[[0,4]],"2027-03-28":[[0,4]],"2027-03-29":[[1,2]],"2027-03-30":[[1,2]],"2027-03-31":[[1,2]],"2027-04-01":[[1,2]],"2027-04-02":[[1,2]],"2027-04-03":[[1,2]],"2027-04-04":[[1,2]],"2027-04-05":[[3,4]],"2027-04-06":[[3,4]],"2027-04-07":[[3,4]],"2027-04-08":[[3,4]],"2027-04-09":[[3,4]],"2027-04-10":[[3,4]],"2027-04-11":[[3,4]],"2027-04-12":[[0,2]],"2027-04-13":[[0,2]],"2027-04-14":[[0,2]],"2027-04-15":[[0,2]],"2027-04-16":[[0,2]],"2027-04-17":[[0,2]],"2027-04-18":[[0,2]],"2027-04-19":[[1,3]],"2027-04-20":[[1,3]],"2027-04-21":[[1,3]],"2027-04-22":[[1,3]],"2027-04-23":[[1,3]],"2027-04-24":[[1,3]],"2027-04-25":[[1,3]],"2027-04-26":[[2,4]],"2027-04-27":[[2,4]],"2027-04-28":[[2,4]],"2027-04-29":[[2,4]],"2027-04-30":[[2,4]],"2027-05-01":[[2,4]],"2027-05-02":[[2,4]],"2027-05-03":[[0,3]],"2027-05-04":[[0,3]],"2027-05-05":[[0,3]],"2027-05-06":[[0,3]],"2027-05-07":[[0,3]],"2027-05-08":[[0,3]],"2027-05-09":[[0,3]],"2027-05-10":[[1,4]],"2027-05-11":[[1,4]],"2027-05-12":[[1,4]],"2027-05-13":[[1,4]],"2027-05-14":[[1,4]],"2027-05-15":[[1,4]],"2027-05-16":[[1,4]],"2027-05-17":[[0,2]],"2027-05-18":[[0,2]],"2027-05-19":[[0,2]],"2027-05-20":[[0,2]],"2027-05-21":[[0,2]],"2027-05-22":[[0,2]],"2027-05-23":[[0,2]],"2027-05-24":[[1,3]],"2027-05-25":[[1,3]],"2027-05-26":[[1,3]],"2027-05-27":[[1,3]],"2027-05-28":[[1,3]],"2027-05-29":[[1,3]],"2027-05-30":[[1,3]],"2027-05-31":[[2,4]],"2027-06-01":[[2,4]],"2027-06-02":[[2,4]],"2027-06-03":[[2,4]],"2027-06-04":[[2,4]],"2027-06-05":[[2,4]],"2027-06-06":[[2,4]],"2027-06-07":[[0,3]],"2027-06-08":[[0,3]],"2027-06-09":[[0,3]],"2027-06-10":[[0,3]],"2027-06-11":[[0,3]],"2027-06-12":[[0,3]],"2027-06-13":[[0,3]],"2027-06-14":[[1,4]],"2027-06-15":[[1,4]],"2027-06-16":[[1,4]],"2027-06-17":[[1,4]],"2027-06-18":[[1,4]],"2027-06-19":[[1,4]],"2027-06-20":[[1,4]],"2027-06-21":[[2,3]],"2027-06-22":[[2,3]],"2027-06-23":[[2,3]],"2027-06-24":[[2,3]],"2027-06-25":[[2,3]],"2027-06-26":[[2,3]],"2027-06-27":[[2,3]],"2027-06-28":[[0,1]],"2027-06-29":[[0,1]],"2027-06-30":[[0,1]],"2027-07-01":[[0,1]],"2027-07-02":[[0,1]],"2027-07-03":[[0,1]],"2027-07-04":[[0,1]],"2027-07-05":[[2,4]],"2027-07-06":[[2,4]],"2027-07-07":[[2,4]],"2027-07-08":[[2,4]],"2027-07-09":[[2,4]],"2027-07-10":[[2,4]],"2027-07-11":[[2,4]],"2027-07-12":[[0,3]],"2027-07-13":[[0,3]],"2027-07-14":[[0,3]],"2027-07-15":[[0,3]],"2027-07-16":[[0,3]],"2027-07-17":[[0,3]],"2027-07-18":[[0,3]],"2027-07-19":[[1,2]],"2027-07-20":[[1,2]],"2027-07-21":[[1,2]],"2027-07-22":[[1,2]],"2027-07-23":[[1,2]],"2027-07-24":[[1,2]],"2027-07-25":[[1,2]],"2027-07-26":[[3,4]],"2027-07-27":[[3,4]],"2027-07-28":[[3,4]],"2027-07-29":[[3,4]],"2027-07-30":[[3,4]],"2027-07-31":[[3,4]],"2027-08-01":[[3,4]],"2027-08-02":[[0,1]],"2027-08-03":[[0,1]],"2027-08-04":[[0,1]],"2027-08-05":[[0,1]],"2027-08-06":[[0,1]],"2027-08-07":[[0,1]],"2027-08-08":[[0,1]],"2027-08-09":[[2,4]],"2027-08-10":[[2,4]],"2027-08-11":[[2,4]],"2027-08-12":[[2,4]],"2027-08-13":[[2,4]],"2027-08-14":[[2,4]],"2027-08-15":[[2,4]],"2027-08-16":[[1,3]],"2027-08-17":[[1,3]],"2027-08-18":[[1,3]],"2027-08-19":[[1,3]],"2027-08-20":[[1,3]],"2027-08-21":[[1,3]],"2027-08-22":[[1,3]],"2027-08-23":[[0,2]],"2027-08-24":[[0,2]],"2027-08-25":[[0,2]],"2027-08-26":[[0,2]],"2027-08-27":[[0,2]],"2027-08-28":[[0,2]],"2027-08-29":[[0,2]],"2027-08-30":[[3,4]],"2027-08-31":[[3,4]],"2027-09-01":[[3,4]],"2027-09-02":[[3,4]],"2027-09-03":[[3,4]],"2027-09-04":[[3,4]],"2027-09-05":[[3,4]],"2027-09-06":[[0,1]],"2027-09-07":[[0,1]],"2027-09-08":[[0,1]],"2027-09-09":[[0,1]],"2027-09-10":[[0,1]],"2027-09-11":[[0,1]],"2027-09-12":[[0,1]],"2027-09-13":[[2,3]],"2027-09-14":[[2,3]],"2027-09-15":[[2,3]],"2027-09-16":[[2,3]],"2027-09-17":[[2,3]],"2027-09-18":[[2,3]],"2027-09-19":[[2,3]],"2027-09-20":[[0,4]],"2027-09-21":[[0,4]],"2027-09-22":[[0,4]],"2027-09-23":[[0,4]],"2027-09-24":[[0,4]],"2027-09-25":[[0,4]],"2027-09-26":[[0,4]],"2027-09-27":[[1,2]],"2027-09-28":[[1,2]],"2027-09-29":[[1,2]],"2027-09-30":[[1,2]],"2027-10-01":[[1,2]],"2027-10-02":[[1,2]],"2027-10-03":[[1,2]],"2027-10-04":[[3,4]],"2027-10-05":[[3,4]],"2027-10-06":[[3,4]],"2027-10-07":[[3,4]],"2027-10-08":[[3,4]],"2027-10-09":[[3,4]],"2027-10-10":[[3,4]],"2027-10-11":[[0,1]],"2027-10-12":[[0,1]],"2027-10-13":[[0,1]],"2027-10-14":[[0,1]],"2027-10-15":[[0,1]],"2027-10-16":[[0,1]],"2027-10-17":[[0,1]],"2027-10-18":[[2,3]],"2027-10-19":[[2,3]],"2027-10-20":[[2,3]],"2027-10-21":[[2,3]],"2027-10-22":[[2,3]],"2027-10-23":[[2,3]],"2027-10-24":[[2,3]],"2027-10-25":[[0,4]],"2027-10-26":[[0,4]],"2027-10-27":[[0,4]],"2027-10-28":[[0,4]],"2027-10-29":[[0,4]],"2027-10-30":[[0,4]],"2027-10-31":[[0,4]],"2027-11-01":[[1,2]],"2027-11-02":[[1,2]],"2027-11-03":[[1,2]],"2027-11-04":[[1,2]],"2027-11-05":[[1,2]],"2027-11-06":[[1,2]],"2027-11-07":[[1,2]],"2027-11-08":[[0,3]],"2027-11-09":[[0,3]],"2027-11-10":[[0,3]],"2027-11-11":[[0,3]],"2027-11-12":[[0,3]],"2027-11-13":[[0,3]],"2027-11-14":[[0,3]],"2027-11-15":[[2,4]],"2027-11-16":[[2,4]],"2027-11-17":[[2,4]],"2027-11-18":[[2,4]],"2027-11-19":[[2,4]],"2027-11-20":[[2,4]],"2027-11-21":[[2,4]],"2027-11-22":[[1,3]],"2027-11-23":[[1,3]],"2027-11-24":[[1,3]],"2027-11-25":[[1,3]],"2027-11-26":[[1,3]],"2027-11-27":[[1,3]],"2027-11-28":[[1,3]],"2027-11-29":[[0,4]],"2027-11-30":[[0,4]],"2027-12-01":[[0,4]],"2027-12-02":[[0,4]],"2027-12-03":[[0,4]],"2027-12-04":[[0,4]],"2027-12-05":[[0,4]],"2027-12-06":[[2,3]],"2027-12-07":[[2,3]],"2027-12-08":[[2,3]],"2027-12-09":[[2,3]],"2027-12-10":[[2,3]],"2027-12-11":[[2,3]],"2027-12-12":[[2,3]],"2027-12-13":[[1,4]],"2027-12-14":[[1,4]],"2027-12-15":[[1,4]],"2027-12-16":[[1,4]],"2027-12-17":[[1,4]],"2027-12-18":[[1,4]],"2027-12-19":[[1,4]],"2027-12-20":[[0,2]],"2027-12-21":[[0,2]],"2027-12-22":[[0,2]],"2027-12-23":[[0,2]],"2027-12-24":[[0,2]],"2027-12-25":[[0,2]],"2027-12-26":[[0,2]],"2027-12-27":[[1,3]],"2027-12-28":[[1,3]],"2027-12-29":[[1,3]],"2027-12-30":[[1,3]],"2027-12-31":[[1,3]]};
-const HOL={"2026-10-12": ["Fiesta Nacional de España", "N"], "2026-11-02": ["Todos los Santos (trasladado)", "A"], "2026-12-07": ["Día de la Constitución (trasladado)", "A"], "2026-12-08": ["Inmaculada Concepción", "N"], "2026-12-24": ["Nochebuena", "R"], "2026-12-25": ["Navidad", "N"], "2026-12-31": ["Nochevieja", "R"], "2027-01-01": ["Año Nuevo", "N"], "2027-01-06": ["Epifanía del Señor", "N"], "2027-03-01": ["Día de Andalucía (trasladado)", "A"], "2027-03-25": ["Jueves Santo", "A"], "2027-03-26": ["Viernes Santo", "N"], "2027-04-14": ["Miércoles de Feria", "L"], "2027-05-01": ["Fiesta del Trabajo", "N"], "2027-05-27": ["Corpus Christi", "L"], "2027-08-16": ["Asunción de la Virgen (trasladado)", "A"], "2027-10-12": ["Fiesta Nacional de España", "N"], "2027-11-01": ["Todos los Santos", "N"], "2027-12-06": ["Día de la Constitución", "N"], "2027-12-08": ["Inmaculada Concepción", "N"], "2027-12-24": ["Nochebuena", "R"], "2027-12-25": ["Navidad", "N"], "2027-12-31": ["Nochevieja", "R"]};
+let DAYS={}, EV={};
+let HOL={};
 const HT={N:"Nacional",A:"Andalucía",L:"Local Sevilla",R:"RJ Jefatura"};
 const MES=["Enero","Febrero","Marzo","Abril","Mayo","Junio","Julio","Agosto","Septiembre","Octubre","Noviembre","Diciembre"];
 const DOW=["L","M","X","J","V","S","D"];
@@ -139,25 +144,29 @@ const iso=d=>`${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,"0")}-${Str
 const parse=s=>{const [y,m,d]=s.split("-").map(Number);return new Date(y,m-1,d)};
 const addD=(d,n)=>{const x=new Date(d);x.setDate(x.getDate()+n);return x};
 const fmt=d=>`${d.getDate()} ${MES[d.getMonth()].slice(0,3).toLowerCase()}.`;
-const keys=Object.keys(DAYS).sort(), FIRST=parse(keys[0]), LAST=parse(keys[keys.length-1]);
+let keys=[], FIRST, LAST;
 const store={get(k){try{return localStorage.getItem(k)}catch(e){return null}},set(k,v){try{localStorage.setItem(k,v)}catch(e){}}};
 let sel=store.get("sel"); sel=sel===null||sel==="" ? -1 : +sel; if(!(sel>=-1&&sel<5)) sel=-1;
 let view="cal", showPast=false;
-let today=new Date(); today=new Date(today.getFullYear(),today.getMonth(),today.getDate());
-if(today<FIRST) today=new Date(FIRST); if(today>LAST) today=new Date(LAST);
-let cur=new Date(today.getFullYear(),today.getMonth(),1);
+let today, cur;
 const g=s=>(DAYS[s]&&DAYS[s][0])||[], vac=s=>(DAYS[s]&&DAYS[s][1])||[];
 const dot=i=>`<span class="dot" style="background:${pc(i)}">${AB[i]}</span>`;
 const chip=(i,big)=>`<span class="chip${big?" big":""}">${dot(i)}${P[i]}</span>`;
 const monday=d=>addD(d,-((d.getDay()+6)%7));
 
 // weeks
-const WEEKS=[]; for(let m=monday(FIRST); m<=LAST; m=addD(m,7)){
+let WEEKS=[];
+function init(){
+  keys=Object.keys(DAYS).sort(); FIRST=parse(keys[0]); LAST=parse(keys[keys.length-1]);
+  today=new Date(); today=new Date(today.getFullYear(),today.getMonth(),today.getDate());
+  if(today<FIRST) today=new Date(FIRST); if(today>LAST) today=new Date(LAST);
+  cur=new Date(today.getFullYear(),today.getMonth(),1);
+  WEEKS=[]; for(let m=monday(FIRST); m<=LAST; m=addD(m,7)){
   const cnt=[0,0,0,0,0], hs=[];
   for(let i=0;i<7;i++){const s=iso(addD(m,i)); g(s).forEach(p=>cnt[p]++); if(HOL[s]) hs.push(s);}
   const ppl=cnt.map((c,i)=>[i,c]).filter(x=>x[1]>0).sort((a,b)=>b[1]-a[1]);
   WEEKS.push({m,ppl,hs});
-}
+}}
 // guard turns per person (consecutive guard blocks)
 function turns(p){const out=[];let st=null,prev=null;
   for(const s of keys){const on=g(s).includes(p);
@@ -201,6 +210,7 @@ function renderCal(){
     const cls=["day"]; if(dt.getDay()===0||dt.getDay()===6) cls.push("we"); if(h) cls.push("hol","h"+h[1]);
     if(+dt===+today) cls.push("today"); if(sel>=0){ if(on.includes(sel)) cls.push("mine"); else cls.push("dim"); if(v.includes(sel)) cls.push("vac"); }
     else if(v.length) cls.push("vac");
+    const e=EV[s]||[]; if(sel>=0?e.includes(sel):e.length) cls.push("evt");
     cells+=`<button class="${cls.join(" ")}" data-s="${s}" aria-label="${d} de ${MES[mo]}: ${on.map(i=>P[i]).join(" y ")||"sin guardia"}${h?", "+h[0]:""}" ${sel>=0?`style="--sel:${pc(sel)}"`:""}><span class="n">${d}</span><span class="ppl">${on.map(i=>`<span class="tag" style="background:${pc(i)}">${AB[i]}</span>`).join("")}</span></button>`;
   }
   let hl="";
@@ -209,7 +219,7 @@ function renderCal(){
   if(sel>=0){const n=keys.filter(s=>{const d=parse(s);return d.getFullYear()===y&&d.getMonth()===mo&&g(s).includes(sel)}).length; myc=`<div class="sub">${P[sel]}: ${n} día${n!==1?"s":""} de guardia este mes</div>`}
   el.innerHTML=`<div class="monthbar"><button class="iconbtn" id="prev" aria-label="Mes anterior" ${canPrev?"":"disabled"}>‹</button><h2>${MES[mo]} ${y}</h2><button class="iconbtn" id="nextm" aria-label="Mes siguiente" ${canNext?"":"disabled"}>›</button></div>
   ${myc}<div class="cal">${cells}</div>
-  <div class="legend">${Object.entries(HT).map(([k,v])=>`<span><i class="sw" style="border-color:var(--h${k});background:var(--h${k}bg)"></i>${v}</span>`).join("")}<span><i class="sw" style="border-color:var(--line);background:var(--weekend)"></i>Fin de semana</span></div>${hl}`;
+  <div class="legend">${Object.entries(HT).map(([k,v])=>`<span><i class="sw" style="border-color:var(--h${k});background:var(--h${k}bg)"></i>${v}</span>`).join("")}<span><i class="sw" style="border-color:var(--line);background:var(--weekend)"></i>Fin de semana</span><span><i class="evdot"></i>Evento personal</span></div>${hl}`;
   el.querySelector("#prev").onclick=()=>{cur=new Date(y,mo-1,1);renderCal()};
   el.querySelector("#nextm").onclick=()=>{cur=new Date(y,mo+1,1);renderCal()};
   el.querySelectorAll(".day[data-s]").forEach(b=>b.onclick=()=>openDay(b.dataset.s));
@@ -224,7 +234,8 @@ function openDay(s){
   sh.innerHTML=`<button class="iconbtn x" aria-label="Cerrar" id="cls">×</button><div class="eyebrow">${wd} ${d.getDate()} de ${MES[d.getMonth()].toLowerCase()} de ${d.getFullYear()}</div>
   ${h?`<div><span class="badge" style="border-color:var(--h${h[1]});color:var(--fg);background:var(--h${h[1]}bg)">${HT[h[1]]}</span> <b>${h[0]}</b></div>`:""}
   <div class="pairbig">${on.length?on.map(i=>chip(i,true)).join(""):'<span class="sub">Sin guardia registrada</span>'}</div>
-  ${v.length?`<div class="sub">De vacaciones: ${v.map(i=>P[i]).join(", ")}</div>`:""}`;
+  ${v.length?`<div class="sub">De vacaciones: ${v.map(i=>P[i]).join(", ")}</div>`:""}
+  ${(EV[s]||[]).length?`<div class="sub">Evento personal: ${EV[s].map(i=>P[i]).join(", ")}</div>`:""}`;
   sh.hidden=false; document.getElementById("cls").onclick=()=>{sh.hidden=true};
 }
 function renderSem(){
@@ -250,7 +261,7 @@ function renderRes(){
   const tot=P.map((_,i)=>d26[i]+d27[i]), avg=tot.reduce((a,b)=>a+b,0)/5;
   el.innerHTML=`<div class="card"><h3>Días de guardia</h3><table><thead><tr><th></th><th>2026</th><th>2027</th><th>Total</th><th>vs media</th><th>Festivos</th></tr></thead><tbody>
   ${P.map((n,i)=>`<tr><td>${dot(i)} ${n}</td><td>${d26[i]}</td><td>${d27[i]}</td><td><b>${tot[i]}</b></td><td>${(tot[i]-avg>0?"+":"")+(tot[i]-avg).toFixed(1)}</td><td>${fh[i]}</td></tr>`).join("")}</tbody></table>
-  <p class="note">2026 cuenta desde el 1 de octubre. Festivos: nacionales, Andalucía, locales de Sevilla y RJ Jefatura.</p></div>
+  <p class="note">Calculado con todo lo que contiene el Excel. Festivos: nacionales, Andalucía, locales de Sevilla y RJ Jefatura.</p></div>
   <div class="card"><h3>Cruces de parejas</h3><table class="mx"><thead><tr><th></th>${AB.map((a,i)=>`<th>${dot(i)}</th>`).join("")}</tr></thead><tbody>
   ${P.map((n,i)=>`<tr><td>${n}</td>${P.map((_,j)=>i===j?`<td class="diag">–</td>`:`<td>${mx[i][j]}</td>`).join("")}</tr>`).join("")}</tbody></table>
   <p class="note">Semanas que coincide cada pareja de guardia desde el 19/10/2026.</p></div>
@@ -262,7 +273,77 @@ document.querySelectorAll("nav.tabs button").forEach(b=>b.onclick=()=>{view=b.da
   ["cal","sem","res"].forEach(v=>document.getElementById("v-"+v).hidden=v!==view);
   document.getElementById("sheet").hidden=true; window.scrollTo(0,0)});
 const hv=(location.hash||"").slice(1); if(["sem","res"].includes(hv)) document.querySelector(`nav.tabs button[data-v="${hv}"]`)?.click();
-renderAll();
+const XLSX_FILE="Brigadas_2026-2027.xlsx";
+function parseWorkbook(wb, XLSX){
+  const NAMES={"JAVI":0,"JOSE":1,"JOSE LUIS":2,"ALBERTO":3,"MOLINERO":4};
+  const MM={ENERO:1,FEBRERO:2,MARZO:3,ABRIL:4,MAYO:5,JUNIO:6,JULIO:7,AGOSTO:8,SEPTIEMBRE:9,OCTUBRE:10,NOVIEMBRE:11,DICIEMBRE:12};
+  const AB3={ENE:1,FEB:2,MAR:3,ABR:4,MAY:5,JUN:6,JUL:7,AGO:8,SEP:9,OCT:10,NOV:11,DIC:12};
+  const days={}, hol={}, ev={}, warn=[];
+  const cell=(ws,r,c)=>ws[XLSX.utils.encode_cell({r,c})];
+  const val=(ws,r,c)=>{const x=cell(ws,r,c);return x&&x.v!=null?String(x.v).trim():""};
+  const pad=n=>String(n).padStart(2,"0");
+  const sheets=wb.SheetNames.filter(n=>/^CALENDARIO/i.test(n));
+  if(!sheets.length) throw new Error('No encuentro hojas que empiecen por "CALENDARIO".');
+  for(const sn of sheets){
+    const ws=wb.Sheets[sn]; if(!ws["!ref"]) continue;
+    const rg=XLSX.utils.decode_range(ws["!ref"]);
+    for(let r=rg.s.r;r<=rg.e.r;r++){
+      const t=val(ws,r,2).toUpperCase().split(/\s+/);
+      if(!(t.length===2&&MM[t[0]]&&/^\d{4}$/.test(t[1]))) continue;
+      const mon=MM[t[0]], yr=+t[1];
+      // person rows: rows below the day-number row until a blank name
+      const rows=[];
+      for(let rr=r+3; rr<r+12; rr++){const nm=val(ws,rr,1).toUpperCase(); if(!nm) break;
+        if(NAMES[nm]===undefined){warn.push(`Nombre desconocido "${nm}" en ${sn}`);continue} rows.push([rr,NAMES[nm]]);}
+      for(let c=2;c<=40;c++){
+        const dn=cell(ws,r+2,c); if(!dn||typeof dn.v!=="number") continue;
+        const k=`${yr}-${pad(mon)}-${pad(dn.v)}`, g=[], v=[];
+        for(const [rr,p] of rows){
+          const x=cell(ws,rr,c), s=x&&x.v!=null?String(x.v).toUpperCase():"";
+          if(s.includes("G")) g.push(p); else if(s.trim()==="V") v.push(p);
+          const pt=x&&x.s&&x.s.patternType; if(pt&&pt!=="none"&&pt!=="solid"){(ev[k]=ev[k]||[]).push(p)}
+        }
+        days[k]=v.length?[g,v]:[g];
+      }
+      // holiday legend to the right (cols AH..AL), rows r..r+9
+      for(let rr=r; rr<r+10; rr++) for(let c=33;c<=37;c++){
+        const a=val(ws,rr,c), b=val(ws,rr,c+1);
+        const m=a.match(/^(\d{1,2})\s+([A-Za-zÁÉÍÓÚáéíóú]{3})/);
+        if(!m||!b) continue; const mo=AB3[m[2].toUpperCase().normalize("NFD").replace(/[̀-ͯ]/g,"")]; if(!mo) continue;
+        const parts=b.split("·"), name=parts[0].trim(), tt=(parts[1]||"").toLowerCase();
+        const ty=/rj/.test(tt)?"R":/local/.test(tt)?"L":/andaluc/.test(tt)?"A":"N";
+        hol[`${yr}-${pad(mo)}-${pad(+m[1])}`]=[name,ty];
+      }
+    }
+  }
+  if(!Object.keys(days).length) throw new Error("No he encontrado ningún mes en las hojas CALENDARIO.");
+  return {days,hol,ev,warn};
+}
+
+function applyData(r,src){
+  DAYS=r.days; HOL=r.hol; EV=r.ev; init(); renderAll();
+  document.getElementById("ver").textContent=src;
+  if(r.warn.length) console.warn(r.warn.join("\n"));
+}
+function showError(msg){
+  document.getElementById("now").innerHTML=`<div class="loadmsg"><div class="eyebrow">No se ha podido cargar el calendario</div><div>${msg}</div>
+  <label class="sub" for="pick">Puedes abrir el Excel desde el móvil para verlo igualmente:</label><input type="file" id="pick" accept=".xlsx"></div>`;
+  document.getElementById("pick").onchange=async e=>{const f=e.target.files[0]; if(!f) return;
+    try{const wb=XLSX.read(await f.arrayBuffer(),{type:"array",cellStyles:true}); applyData(parseWorkbook(wb,XLSX),"Datos: "+f.name+" (local)")}catch(err){alert(err.message)}};
+}
+async function load(){
+  document.getElementById("now").innerHTML='<div class="sub">Cargando calendario…</div>';
+  if(typeof XLSX==="undefined"){showError("No se ha podido cargar el lector de Excel. Comprueba la conexión a Internet.");return}
+  try{
+    const res=await fetch(encodeURI(XLSX_FILE)+"?t="+Date.now(),{cache:"no-store"});
+    if(!res.ok) throw new Error(`No encuentro el fichero <b>${XLSX_FILE}</b> junto a esta página (error ${res.status}).`);
+    const wb=XLSX.read(await res.arrayBuffer(),{type:"array",cellStyles:true});
+    const lm=res.headers.get("Last-Modified"); let src="Datos del Excel";
+    if(lm){const d=new Date(lm); if(!isNaN(d)) src+=` · actualizado ${d.toLocaleDateString("es-ES")} ${d.toLocaleTimeString("es-ES",{hour:"2-digit",minute:"2-digit"})}`}
+    applyData(parseWorkbook(wb,XLSX),src);
+  }catch(err){showError(err.message||String(err))}
+}
+load();
 </script>
 
 </body>
